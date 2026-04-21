@@ -1,7 +1,8 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0a0a0a;
+
+  background: radial-gradient(circle at top, #111 0%, #000 60%, #050505 100%);
 
   min-height: 100vh;
 
@@ -9,16 +10,36 @@ body {
   justify-content: center;
   align-items: center;
 
-  overflow-x: hidden; /* FIX MOBILE OVERFLOW */
-  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
-/* GLOBAL BOX FIX */
+/* FIX GLOBAL */
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
 }
 
-/* 📱 COQUE TÉLÉPHONE */
+/* TITRES */
+h1, h2 {
+  color: #00ff66;
+  text-align: center;
+  text-shadow: 0 0 12px rgba(0,255,102,0.25);
+}
+
+h3 {
+  margin-top: 10px;
+}
+
+p {
+  margin: 5px 0;
+  text-align: center;
+}
+
+/* 📱 PHONE */
 .phone-frame {
   width: min(380px, 95vw);
   height: min(660px, 90vh);
@@ -38,10 +59,10 @@ body {
     0 0 50px rgba(0,255,102,0.18),
     inset 0 0 10px rgba(255,255,255,0.05);
 
-  overflow: hidden; /* FIX IMPORTANT */
+  overflow: hidden;
 }
 
-/* 📱 ÉCRAN */
+/* 📱 SCREEN */
 .screen {
   width: 100%;
   height: 100%;
@@ -59,40 +80,42 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
 
-  -webkit-overflow-scrolling: touch;
-
   color: white;
 
-  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
 
-  max-height: 100%;
+  transition: 0.25s ease;
 }
 
-/* écran actif */
+/* ACTIVE SCREEN */
 .screen.active {
   display: flex;
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
 }
 
-/* 🖼 WALLPAPER */
+/* BACKGROUND */
 .screen::before {
   content: "";
   position: absolute;
   inset: 0;
 
   background: url("assets/zebra-terminal.png") center/cover no-repeat;
-
   filter: brightness(0.35);
 
   z-index: 0;
 }
 
-/* contenu au-dessus */
+/* CONTENT */
 .screen > * {
   position: relative;
   z-index: 2;
 }
 
-/* 📶 STATUS BAR */
+/* STATUS BAR */
 .status-bar {
   position: absolute;
   top: 10px;
@@ -108,18 +131,7 @@ body {
   z-index: 3;
 }
 
-/* 🧠 TITRES */
-h1, h2 {
-  color: #00ff66;
-  text-align: center;
-}
-
-/* 📄 TEXTE */
-p {
-  text-align: center;
-}
-
-/* 🔘 BOUTONS */
+/* BUTTONS */
 button {
   width: 90%;
   padding: 12px;
@@ -134,24 +146,15 @@ button {
 
   font-weight: bold;
   cursor: pointer;
+
+  transition: 0.2s;
 }
 
-/* ⚡ ANIMATION BOUTONS */
-.btn-anim {
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+button:active {
+  transform: scale(0.97);
 }
 
-.btn-anim:hover {
-  transform: scale(1.03);
-  box-shadow: 0 0 15px rgba(0,255,102,0.4);
-}
-
-.btn-anim:active {
-  transform: scale(0.96);
-  box-shadow: 0 0 12px #00ff66;
-}
-
-/* ⌨ INPUT */
+/* INPUT */
 input {
   width: 80%;
   padding: 10px;
@@ -163,16 +166,15 @@ input {
   border-radius: 8px;
 }
 
-/* 🔐 LOCK */
+/* LOCK */
 #lock {
   justify-content: flex-end;
   align-items: center;
 
-  padding-bottom: 40px; /* FIX léger mobile */
+  padding-bottom: 40px;
   gap: 10px;
 }
 
-/* 🔒 ICON */
 .lock-icon {
   font-size: 80px;
   cursor: pointer;
@@ -185,14 +187,14 @@ input {
   text-shadow: 0 0 15px #00ff66;
 }
 
-/* 📱 HOME */
+/* HOME */
 .title-home {
   margin-top: 20px;
   color: #00ff66;
   text-align: center;
 }
 
-/* 📦 GRID APPS */
+/* APPS */
 .apps-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -205,7 +207,6 @@ input {
   justify-items: center;
 }
 
-/* 📦 APP */
 .app {
   width: 100%;
   max-width: 140px;
@@ -224,26 +225,34 @@ input {
 
   font-size: 20px;
   color: white;
-}
 
-/* ✨ CLICKABLE */
-.clickable {
-  border: 2px solid #00ff66;
-  cursor: pointer;
   transition: 0.2s;
 }
 
-.clickable:hover {
+.app:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(0,255,102,0.3);
+  box-shadow: 0 0 18px rgba(0,255,102,0.2);
 }
 
-/* 📦 MISSION */
+@media (hover: none) {
+  .app:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* CLICKABLE */
+.clickable {
+  border: 2px solid #00ff66;
+  cursor: pointer;
+}
+
+/* MISSION */
 .mission-card {
   width: 100%;
   background: rgba(0,0,0,0.6);
 
-  border: 2px solid #2a2a2a;
+  border: 1px solid rgba(0,255,102,0.2);
   border-radius: 15px;
 
   padding: 15px;
@@ -251,8 +260,11 @@ input {
   margin-top: 20px;
 
   font-size: 14px;
+
+  backdrop-filter: blur(12px);
 }
 
+/* LIST */
 .mission-card ul {
   padding-left: 15px;
 }
@@ -266,18 +278,18 @@ input {
   margin: 10px 0;
 }
 
-/* 📦 PRODUIT */
+/* PRODUCT */
 .product-icon {
   font-size: 60px;
   margin: 20px 0;
 }
 
-/* 📊 BOX */
+/* SCAN */
 .scan-box {
   width: 100%;
   background: rgba(0,0,0,0.6);
 
-  border: 2px solid #2a2a2a;
+  border: 1px solid rgba(0,255,102,0.2);
   border-radius: 15px;
 
   padding: 15px;
@@ -285,19 +297,46 @@ input {
   text-align: center;
 
   margin-top: 20px;
+
+  backdrop-filter: blur(12px);
 }
 
-.scan-box p {
-  margin: 0 0 10px 0;
-  opacity: 0.8;
-}
-
-.scan-box input {
+/* PROGRESS */
+.progress-bar {
   width: 90%;
-  margin-top: 10px;
+  height: 10px;
+
+  background: #222;
+  border-radius: 20px;
+
+  overflow: hidden;
+
+  margin: 10px 0 15px;
 }
 
-/* 🔥 BOTTOM BUTTON */
+#progress-fill {
+  width: 0%;
+  height: 100%;
+
+  background: linear-gradient(90deg, #00ff66, #00c853);
+
+  transition: width 0.3s ease;
+}
+
+/* WARNING */
+.warning {
+  color: #ff4d4d;
+  font-weight: bold;
+  margin-top: 10px;
+
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0.5; }
+}
+
+/* BUTTON ACTION */
 .bottom-action {
   margin-top: auto;
   width: 100%;
@@ -307,12 +346,11 @@ input {
   padding-bottom: 10px;
 }
 
-/* ✔ VALIDATE */
 .btn-validate {
   width: 95%;
   padding: 15px;
 
-  background: #1f1f1f;
+  background: linear-gradient(90deg, #1f1f1f, #111);
   border: 2px solid #00ff66;
   color: #00ff66;
 
@@ -326,28 +364,69 @@ input {
   transition: 0.2s;
 }
 
-.btn-validate:active {
-  transform: scale(0.97);
-  box-shadow: 0 0 10px #00ff66;
+/* FIX BUTTON */
+#fixBtn {
+  width: 95%;
+  padding: 15px;
+
+  margin-top: 10px;
+
+  background: #1f1f1f;
+  border: 2px solid #ff3b3b;
+  color: #ff3b3b;
+
+  border-radius: 6px;
+
+  font-weight: bold;
 }
 
-/* 📱 MOBILE */
+/* SUCCESS SCREEN */
+.success-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  animation: pop 0.4s ease;
+}
+
+.check {
+  font-size: 90px;
+  animation: bounce 0.6s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes bounce {
+  0% { transform: scale(0.3); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.stars {
+  font-size: 22px;
+  color: gold;
+  margin-top: 10px;
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px gold; }
+  to { text-shadow: 0 0 20px gold; }
+}
+
+/* MOBILE */
 @media (max-width: 480px) {
   .phone-frame {
     width: 95vw;
     height: 90vh;
-
-    border-radius: 45px;
-
-    transform: scale(0.92);
-  }
-
-  .screen {
-    padding: 45px 10px 10px 10px;
   }
 
   .app {
-    max-width: 100%;
     height: 80px;
     font-size: 18px;
   }
@@ -360,3 +439,30 @@ input {
     font-size: 45px;
   }
 }
+
+.delivery-track{
+  position:relative;
+  width:85%;
+  height:16px;
+  background:#222;
+  border-radius:30px;
+  margin-top:40px;
+  overflow:visible;
+  }
+  
+  .delivery-progress{
+  width:0%;
+  height:100%;
+  background:linear-gradient(90deg,#00ff66,#00c853);
+  border-radius:30px;
+  transition:width .15s linear;
+  }
+  
+  .truck{
+  position:absolute;
+  top:-28px;
+  left:0%;
+  font-size:34px;
+  transition:left .15s linear;
+  filter:drop-shadow(0 0 8px rgba(0,255,102,.4));
+  }
