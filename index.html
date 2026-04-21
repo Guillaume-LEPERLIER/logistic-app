@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Warehouse App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="phone-frame">
+
+<!-- 🔒 LOCK -->
+<div id="lock" class="screen active">
+  <div class="status-bar">🔋 87% | 📶 5G LOGISTIQUE | 🕒 8:31</div>
+  <div class="lock-icon" onclick="unlock()">🔐</div>
+  <p>Appuyez pour déverrouiller</p>
+</div>
+
+<!-- 📱 HOME -->
+<div id="home" class="screen">
+  <div class="status-bar">🔋 87% | 📶 5G LOGISTIQUE | 🕒 8:31</div>
+
+  <h1 class="title-home"> 📱 Applications</h1>
+
+  <div class="apps-grid">
+    <div class="app">📞<br><small>Téléphone</small></div>
+    <div class="app">📍<br><small>Suivi</small></div>
+    <div class="app clickable" onclick="openMission()">📦 LogiTrack</div>
+    <div class="app">⚙️<br><small>Paramètres</small></div>
+  </div>
+</div>
+
+<!-- 📦 MISSION -->
+<div id="mission" class="screen">
+  <div class="status-bar">🔋 87% | 📶 LOGISTIQUE | 🕒 8:31</div>
+
+  <h2>📦 Mission de préparation</h2>
+
+  <div class="mission-card">
+    <p><strong>👤 Client :</strong> ROBERT Jean</p>
+
+    <p><strong>📍 Adresse :</strong><br>
+      26 sous les cocotiers 🌴<br>
+      97490 La Réunion 🇷🇪
+    </p>
+
+    <hr>
+
+    <p><strong>📦 Produits :</strong></p>
+
+    <ul id="missionList"></ul>
+  </div>
+
+  <button class="btn-anim" onclick="startMission()">
+    ▶ Démarrer la mission
+  </button>
+</div>
+
+<!-- 📦 PICK -->
+<div id="pick" class="screen">
+
+  <div class="status-bar">🔋 87% | 📶 LOGISTIQUE | 🕒 8:31</div>
+
+  <h2 id="productName"></h2>
+
+  <div class="product-icon" id="productIcon">📦</div>
+
+  <div id="infoBox"></div>
+
+  <div class="scan-box">
+    <p>Quantité à prélever</p>
+    <input type="number" id="qty" placeholder="Ex : 2">
+  </div>
+
+  <div class="bottom-action">
+    <button class="btn-validate" onclick="validatePick()">
+      ✔ VALIDER
+    </button>
+  </div>
+
+</div>
+
+<!-- 📋 RECAP FINAL -->
+<div id="recap" class="screen">
+
+  <div class="status-bar">🔋 87% | 📶 LOGISTIQUE | 🕒 8:31</div>
+
+  <h1>📋 Récapitulatif commande</h1>
+
+  <div class="mission-card">
+    <p><strong>👤 Client :</strong> ROBERT Jean</p>
+
+    <p><strong>📍 Livraison :</strong><br>
+      26 sous les cocotiers 🌴<br>
+      97490 La Réunion 🇷🇪
+    </p>
+
+    <hr>
+
+    <div id="recapList"></div>
+  </div>
+
+  <button onclick="ship()">🚚 Expédier la commande</button>
+
+</div>
+<!-- 📬 CONFIRMATION LIVRAISON -->
+<div id="delivery" class="screen">
+
+    <div class="status-bar">🔋 87% | 📶 LOGISTIQUE | 🕒 8:31</div>
+  
+    <h1>📦 Livraison terminée</h1>
+  
+    <div class="mission-card">
+  
+      <p style="font-size: 50px;">✅</p>
+  
+      <p><strong>M. ROBERT Jean</strong></p>
+  
+      <p>a bien reçu sa commande</p>
+  
+      <hr>
+  
+      <p>📍 26 sous les cocotiers 🌴<br>
+      97490 La Réunion 🇷🇪</p>
+  
+      <hr>
+  
+      <p>⭐ Client satisfait : <strong>100%</strong></p>
+  
+      <p>🙏 Merci pour votre travail !</p>
+  
+    </div>
+  
+    <button onclick="restartApp()">
+      🔁 Nouvelle mission
+    </button>
+  
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
