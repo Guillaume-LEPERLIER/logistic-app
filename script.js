@@ -1,25 +1,64 @@
 let step = 0;
 let data = {};
+let mission = [];
+let client = null;
+let orderId = null;
 
-// 📦 mission unique source
-const mission = [
-  { name: "Boîte à outils", qty: 1, icon: "🧰" },
-  { name: "Peinture murale", qty: 3, icon: "🎨" },
-  { name: "Tournevis", qty: 5, icon: "🪛" },
-  { name: "Chaise de jardin", qty: 4, icon: "🪑" },
-  { name: "Gazon synthétique", qty: 2, icon: "🌱" }
+const $ = (id) => document.getElementById(id);
+
+/* ======================
+   DONNÉES
+====================== */
+
+const clients = [
+  { name: "Jean ROBERT", address: "26 sous les cocotiers, 97490 La Réunion" },
+  { name: "Sophie MARTIN", address: "12 rue des manguiers, 26000 Valence" },
+  { name: "Karim BENALI", address: "8 avenue du port, 13002 Marseille" },
+  { name: "Emma LEBLANC", address: "5 rue des alizés, 75012 Paris" }
 ];
+
+const products = [
+  { name: "Boîte à outils", icon: "🧰" },
+  { name: "Peinture murale", icon: "🎨" },
+  { name: "Tournevis", icon: "🪛" },
+  { name: "Chaise de jardin", icon: "🪑" },
+  { name: "Gazon synthétique", icon: "🌱" },
+  { name: "Perceuse", icon: "🔧" }
+];
+
+/* ======================
+   GENERATE MISSION (FIX CLIENT RANDOM)
+====================== */
+
+function generateMission() {
+
+  const index = Math.floor(Math.random() * clients.length);
+  client = clients[index];
+
+  orderId = Math.floor(Math.random() * 90000 + 10000);
+
+  mission = [...products]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 4)
+    .map(p => ({
+      ...p,
+      qty: Math.floor(Math.random() * 4) + 1
+    }));
+}
 
 /* ======================
    NAVIGATION
 ====================== */
 
 function show(id) {
-  document.querySelectorAll(".screen").forEach(s => {
-    s.classList.remove("active");
-  });
 
-  document.getElementById(id).classList.add("active");
+  document.querySelectorAll(".screen")
+    .forEach(s => s.classList.remove("active"));
+
+  $(id).classList.add("active");
+
+  // RESET DELIVERY VISUEL SI ON QUITTE
+  if (id !== "delivery") resetDelivery();
 }
 
 /* ======================
@@ -27,41 +66,50 @@ function show(id) {
 ====================== */
 
 window.onload = () => {
+  generateMission();
   show("lock");
-  renderMissionList();
 };
 
 /* ======================
-   ACTIONS
+   UNLOCK
 ====================== */
 
 function unlock() {
   show("home");
 }
 
+/* ======================
+   OPEN MISSION (FORCE REFRESH)
+====================== */
+
 function openMission() {
+
+  generateMission();
+
+  step = 0;
+  data = {};
+
+  renderMission();
   show("mission");
 }
 
 /* ======================
-   LIST MISSION
+   MISSION SCREEN
 ====================== */
 
-function renderMissionList() {
-  const list = document.getElementById("missionList");
-  if (!list) return;
+function renderMission() {
 
-  list.innerHTML = "";
+  $("clientName").textContent = client.name;
+  $("clientAddress").textContent = client.address;
+  $("orderId").textContent = orderId;
 
-  mission.forEach(item => {
-    list.innerHTML += `
-      <li>${item.icon} ${item.name} — ${item.qty}</li>
-    `;
-  });
+  $("missionList").innerHTML = mission
+    .map(m => `<li>${m.icon} ${m.name} — ${m.qty}</li>`)
+    .join("");
 }
 
 /* ======================
-   PICK SYSTEM
+   START PICK
 ====================== */
 
 function startMission() {
@@ -70,24 +118,63 @@ function startMission() {
   showPick();
 }
 
+function currentItem() {
+  return mission[step];
+}
+
+/* ======================
+   PICK SCREEN
+====================== */
+
 function showPick() {
-  const item = mission[step];
 
-  document.getElementById("productName").innerText = item.name;
-  document.getElementById("productIcon").innerText = item.icon;
+  const item = currentItem();
 
-  document.getElementById("infoBox").innerHTML =
-    `📥 Quantité à prélever : <strong>${item.qty}</strong>`;
+  if (!item) {
+    showRecap();
+    return;
+  }
 
-  document.getElementById("qty").value = "";
+  $("productName").textContent = item.name;
+  $("productIcon").textContent = item.icon;
+
+  $("infoBox").innerHTML = `Quantité demandée : <b>${item.qty}</b>`;
+
+  $("qty").value = "";
+  $("warning").textContent = "";
+
+  $("progress").textContent =
+    `Étape ${step + 1} / ${mission.length}`;
+
+  $("progress-fill").style.width =
+    (step / mission.length) * 100 + "%";
 
   show("pick");
 }
 
-function validatePick() {
-  const item = mission[step];
+/* ======================
+   VALIDATION PICK
+====================== */
 
-  data[item.name] = Number(document.getElementById("qty").value);
+function validatePick() {
+
+  const item = currentItem();
+  const val = Number($("qty").value);
+
+  if (!item) return showRecap();
+
+  if (isNaN(val) || val < 0) {
+    $("warning").textContent = "Quantité invalide";
+    return;
+  }
+
+  if (val > item.qty) {
+    $("warning").textContent =
+      "Impossible de dépasser la quantité prévue";
+    return;
+  }
+
+  data[item.name] = val;
 
   step++;
 
@@ -99,48 +186,126 @@ function validatePick() {
 }
 
 /* ======================
-   RECAP FINAL
+   RECAP FIX (CLIENT + PRODUITS OK)
 ====================== */
 
 function showRecap() {
+
+  let missing = 0;
+  let errors = 0;
   let html = "";
 
-  mission.forEach(item => {
+  $("finalClientName").textContent = client.name;
+  $("finalClientAddress").textContent = client.address;
+
+  mission.forEach(m => {
+
+    const val = data[m.name] || 0;
+
+    let status = "OK";
+
+    if (val < m.qty) {
+      status = `MANQUE ${m.qty - val}`;
+      missing++;
+    }
+
+    if (val > m.qty) {
+      status = `SURPLUS ${val - m.qty}`;
+      errors++;
+    }
+
     html += `
       <p>
-        ${item.icon} ${item.name} :
-        <strong>${data[item.name] || 0}</strong> / ${item.qty}
+        ${m.icon} ${m.name} : ${val}/${m.qty} → ${status}
       </p>
     `;
   });
 
-  document.getElementById("recapList").innerHTML = html;
+  $("recapList").innerHTML = html;
+
+  const hasError = missing > 0 || errors > 0;
+
+  $("shipBtn").disabled = hasError;
+
+  $("shipBtn").textContent =
+    hasError ? "🚫 Expédition bloquée" : "🚚 Expédier la commande";
+
+  $("fixBtn").style.display =
+    hasError ? "block" : "none";
 
   show("recap");
 }
 
 /* ======================
-   DELIVERY PAGE
-====================== */
-
-function showDelivery() {
-  show("delivery");
-}
-
-/* ======================
-   EXPEDITION
+   SHIP ANIMATION (CAMION FIX PROPRE)
 ====================== */
 
 function ship() {
-  showDelivery();
+
+  if ($("shipBtn").disabled) {
+    alert("Compléter la commande");
+    return;
+  }
+
+  show("delivery");
+
+  const bar = $("deliveryProgress");
+  const truck = $("truck");
+
+  let progress = 0;
+
+  bar.style.width = "0%";
+  truck.style.left = "0%";
+
+  const timer = setInterval(() => {
+
+    progress += 3;
+
+    if (progress > 100) progress = 100;
+
+    bar.style.width = progress + "%";
+    truck.style.left = progress + "%";
+
+    if (progress >= 100) {
+      clearInterval(timer);
+      setTimeout(() => show("success"), 400);
+    }
+
+  }, 100);
+}
+/* ======================
+   RESET DELIVERY (ANTI BUG MOBILE)
+====================== */
+
+function resetDelivery() {
+
+  const bar = $("deliveryProgress");
+  const truck = $("truck");
+
+  if (bar) bar.style.width = "0%";
+  if (truck) truck.style.left = "0%";
 }
 
 /* ======================
-   RESTART APP
+   BACK
+====================== */
+
+function backToPick() {
+  step = 0;
+  showPick();
+}
+
+/* ======================
+   RESTART CLEAN
 ====================== */
 
 function restartApp() {
-    step = 0;
-    data = {};
-    show("lock");
-  }
+
+  generateMission();
+
+  step = 0;
+  data = {};
+
+  renderMission();
+  show("mission");
+}
