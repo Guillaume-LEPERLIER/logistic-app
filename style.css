@@ -313,5 +313,12 @@ body {
     transform: scale(0.97);
     box-shadow: 0 0 10px #00ff66;
   }
-
+  @media (max-width: 420px) {
+    .phone-frame {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      border: none;
+    }
+  }
   
