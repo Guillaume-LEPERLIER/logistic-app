@@ -8,6 +8,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+
+  overflow-x: hidden; /* FIX MOBILE OVERFLOW */
+  box-sizing: border-box;
+}
+
+/* GLOBAL BOX FIX */
+* {
+  box-sizing: border-box;
 }
 
 /* 📱 COQUE TÉLÉPHONE */
@@ -29,6 +37,8 @@ body {
   box-shadow:
     0 0 50px rgba(0,255,102,0.18),
     inset 0 0 10px rgba(255,255,255,0.05);
+
+  overflow: hidden; /* FIX IMPORTANT */
 }
 
 /* 📱 ÉCRAN */
@@ -158,7 +168,7 @@ input {
   justify-content: flex-end;
   align-items: center;
 
-  padding-bottom: 30px;
+  padding-bottom: 40px; /* FIX léger mobile */
   gap: 10px;
 }
 
@@ -321,13 +331,12 @@ input {
   box-shadow: 0 0 10px #00ff66;
 }
 
-/* 📱 MOBILE (IMPORTANT : ON GARDE LE CADRE) */
+/* 📱 MOBILE */
 @media (max-width: 480px) {
   .phone-frame {
     width: 95vw;
     height: 90vh;
 
-    border: 14px solid #2a2a2a;
     border-radius: 45px;
 
     transform: scale(0.92);
